@@ -13,4 +13,10 @@ $ python3 gui.py #on Linux
 $ python gui.py #on Windows
 ```
 ## Current key bindings: 
-w:"Rotate Right", s:"Drop", a:"Move Left", d:"Move Right"
+w:"Rotate Right"
+
+s:"Drop"
+
+a:"Move Left"
+
+d:"Move Right"
