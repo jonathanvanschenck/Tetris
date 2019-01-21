@@ -1,4 +1,4 @@
-# Classic Tetris
+## Classic Tetris
 # How to Run: From your command line, navigate to the "/Tetris" directory
 $ cd /path/to/Tetris
 # Call pass gui.py to python 3. On linux:
