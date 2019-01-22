@@ -6,9 +6,10 @@ Created on Sat Jan 19 23:19:13 2019
 """
 
 #%%
-framerate = 10
-framesPerStep = 5
-downKeyDiv = 4-1
+framerate = 60
+framesPerStep = 60
+downKeyDiv = 10-1
+deadFrames = 9
 
 stageWB = 10#blocks
 stageHB = 18#blocks

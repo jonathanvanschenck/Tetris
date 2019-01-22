@@ -12,7 +12,7 @@ import tkinter as tk
 import engine
 import setupVars
 import initialize
-#%%
+#%
 class App(tk.Frame):
     keyList = {"a":0, "d":1, "w":2, "s":3}
     
@@ -35,7 +35,7 @@ class App(tk.Frame):
         self.pauseB.configure(state="disabled")
         self.pauseB.grid(row=0,column=2)
         self.gameRunning=False
-        self.currentFrameIndex = 0
+        self.currentFrameIndex = 1
         self.currentFrameLabel = tk.Label(self.buttonFrame,text="Frame: {}".format(self.currentFrameIndex))
         self.currentFrameLabel.grid(row=0,column=3)
         #Create Game Space
@@ -51,6 +51,7 @@ class App(tk.Frame):
     def setupBindings(self,master):
         #Look for key presses
         self.key = [0,0,0,0]
+        self.keyF = len(self.key)*[-setupVars.deadFrames]
         self.master.bind("<Key>",self.keyPress)
         self.master.bind("<KeyRelease>",self.keyRelease)
         #Look for clicks in window
@@ -73,6 +74,14 @@ class App(tk.Frame):
             self.printTerm("Released: {} key".format(key))
         else:
             pass
+
+    def keyToSend(self):
+        keytosend = len(self.key)*[0]
+        for i in range(len(self.key)):
+            keytosend[i] = self.key[i]*(self.keyF[i]+setupVars.deadFrames < self.currentFrameIndex)
+            if keytosend[i]==1:
+                self.keyF[i] = self.currentFrameIndex
+        return keytosend
         
     def printTerm(self,message):
         self.term.insert(tk.END,"\n\r"+message)
@@ -90,6 +99,7 @@ class App(tk.Frame):
         #self.canvas.addtag_closest("player",100,100)
         #self.master.bind("<Key>",self.keyPress)
         self.currentFrameIndex = 1
+        self.keyF = len(self.key)*[-setupVars.deadFrames]
         self.currentFrameLabel.configure(text="Frame: {}".format(self.currentFrameIndex))
         self.key = [0,0,0,0]
         self.updateGame()
@@ -99,7 +109,8 @@ class App(tk.Frame):
             if (self.currentFrameIndex % (setupVars.framesPerStep//(self.key[3]*setupVars.downKeyDiv+1))) == 0:
                 result = engine.step(self.canvas)
             else:
-                result = engine.update(self.canvas,self.key)
+                keys = self.keyToSend()
+                result = engine.update(self.canvas,keys)
             self.gameOver = result[0]
 #            self.gameWin = result[1]
             self.currentFrameIndex += 1
