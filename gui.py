@@ -54,24 +54,19 @@ class App(tk.Frame):
         self.keyF = len(self.key)*[-setupVars.deadFrames]
         self.master.bind("<Key>",self.keyPress)
         self.master.bind("<KeyRelease>",self.keyRelease)
-        #Look for clicks in window
-        self.canvas.bind("<Button-1>", self.lclick)
-    
-    def lclick(self,event):
-        self.printTerm("Clicked at: x={0:.0f}, y={1:.0f}".format(event.x,event.y))
         
     def keyPress(self,event):
         key = repr(event.char).strip("\'")
         if key in self.keyList and self.gameRunning:
             self.key[self.keyList[key]] = 1
-            self.printTerm("Pressed: {} key".format(key))
+            #self.printTerm("Pressed: {} key".format(key))
         else:
             pass
     def keyRelease(self,event):
         key = repr(event.char).strip("\'")
         if key in self.keyList and self.gameRunning:
             self.key[self.keyList[key]] = 0
-            self.printTerm("Released: {} key".format(key))
+            #self.printTerm("Released: {} key".format(key))
         else:
             pass
 
@@ -93,7 +88,7 @@ class App(tk.Frame):
         self.startB.configure(state="disabled")
         self.gameRunning = True
         self.gameOver = False
-        self.gameWin = False
+        self.gameScore = 0
         initialize.initialize(self.canvas)
         #self.player = self.canvas.create_rectangle(100,100,200,200)
         #self.canvas.addtag_closest("player",100,100)
@@ -105,20 +100,21 @@ class App(tk.Frame):
         self.updateGame()
         
     def updateGame(self):
-        if self.gameRunning and not self.gameOver and not self.gameWin:
+        if self.gameRunning and not self.gameOver:
             if (self.currentFrameIndex % (setupVars.framesPerStep//(self.key[3]*setupVars.downKeyDiv+1))) == 0:
                 result = engine.step(self.canvas)
+                self.gameScore += {0:0,1:10,2:50,3:100,4:1000}[result[1]]
+                self.printTerm("Score: {:0>5}".format(self.gameScore))
             else:
                 keys = self.keyToSend()
                 result = engine.update(self.canvas,keys)
             self.gameOver = result[0]
-#            self.gameWin = result[1]
             self.currentFrameIndex += 1
             self.currentFrameLabel.configure(text="Frame: {}".format(self.currentFrameIndex))
             self.after(int(1000/setupVars.framerate),self.updateGame)
-        elif self.gameRunning and (self.gameOver or self.gameWin):
+        elif self.gameRunning and self.gameOver:
             self.gameRunning = False
-            self.printTerm(engine.np.array(["Game Over!","Game Win!"])[[self.gameOver,self.gameWin]][0])
+            self.printTerm("Game Over!")
             self.after(int(1000/setupVars.framerate),self.updateGame)
         else:
             pass

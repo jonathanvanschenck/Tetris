@@ -20,6 +20,7 @@ vmax = np.array([10.0,40.0])
 
 def step(canvas):
     gameOver = False
+    clearedrows = 0
     objF = canvas.find_withtag("Falling")
 #    for o in canvas.find_all():
 #        print(canvas.gettags(o))
@@ -32,8 +33,8 @@ def step(canvas):
         dropB(canvas,objF)
         ground = grounded(canvas,objF)
         if ground:
-            rowFilled(canvas)
-    return [gameOver,False]
+            clearedrows = rowFilled(canvas)
+    return [gameOver,clearedrows]
 
 def update(canvas,key):
     objF = canvas.find_withtag("Falling")
@@ -46,7 +47,7 @@ def update(canvas,key):
             transformer.TransformR(canvas,objF)
             if collisionQ(canvas,objF):
                 transformer.TransformL(canvas,objF)
-    return [False,False]
+    return [False,0]
 
 
 
@@ -117,12 +118,14 @@ def grounded(canvas,obj):
     return grounded
 
 def rowFilled(canvas):
+    clearedrows = 0
     for i in range(18):
         rowids = canvas.find_enclosed(setupVars.marginP - 1,#x1
                                       setupVars.marginP + i*setupVars.PperB - 1,#y1
                                       setupVars.marginP + setupVars.stageWP + 1,#x2
                                       setupVars.marginP + (i+1)*setupVars.PperB + 1)#y2
         if len(rowids) == 10:
+            clearedrows += 1
             for obj in rowids:
                 canvas.delete(obj)
             sleep(0.1)
@@ -132,6 +135,7 @@ def rowFilled(canvas):
                                             setupVars.marginP + i*setupVars.PperB + 1)#y2
             for obj in aboveids:
                 canvas.move(obj,0,setupVars.PperB)
+    return clearedrows
                 
                 
     
